@@ -26,34 +26,40 @@ class Game:
         self.player_frame.pack(side='left')
 
         self.redraw_player_widgets()
-
+		
+        self.enemy_frame = tk.Frame(self.window)
+        self.enemy_frame.pack(side='left')
+        
         self.combat_frame = tk.Frame(self.window)
         self.combat_frame.pack(side='left')
         tk.Button(self.combat_frame, text='атака', command=self.attack).pack()
-
-        self.enemy_frame = tk.Frame(self.window)
-        self.enemy_frame.pack(side='left')
 
         self.window.mainloop()
 
     def attack(self) -> None:
         self.player.hp -= 10
+        self.enemy.hp -= 10
         self.redraw_player_widgets()
 
     def redraw_player_widgets(self) -> None:
         for widget in self.player_frame.winfo_children():
             widget.destroy() 
-        image = Image.open(self.img_dir / self.player.image)
-        image = image.resize((self.image_size, self.image_size))
-        self.player_image_tk = ImageTk.PhotoImage(image=image)
-        tk.Label(self.player_frame, image=self.player_image_tk).pack()
-        tk.Label(self.player_frame, text=self.player.name).pack()
-        tk.Label(self.player_frame, text=f'жизни: {self.player.hp}').pack()
-        tk.Label(self.player_frame, text=f'уровень: {self.player.level}').pack()
-        tk.Label(self.player_frame, text=f'опыт: {self.player.xp}').pack()
-        tk.Label(self.player_frame, text=f'атака: {self.player.attack}').pack()
-        tk.Label(self.player_frame, text=f'защита: {self.player.defence}').pack()
-        tk.Label(self.player_frame, text=f'оружие: {self.player.weapon}').pack()
+        self.creation_widgets(self.player, self.player_frame)
+        self.creation_widgets(self.enemy, self.enemy_frame)
 
+    def creation_widgets(self, character, character_frame) -> None:
+        self.character = character
+        self.character_frame = character_frame
+        image = Image.open(self.img_dir / self.character.image)
+        image = image.resize((self.image_size, self.image_size))
+        self.character_image_tk = ImageTk.PhotoImage(image=image)
+        tk.Label(self.character_frame, image=self.character_image_tk).pack()
+        tk.Label(self.character_frame, text=self.character.name).pack()
+        tk.Label(self.character_frame, text=f'жизни: {self.character.hp}').pack()
+        tk.Label(self.character_frame, text=f'уровень: {self.character.level}').pack()
+        tk.Label(self.character_frame, text=f'опыт: {self.character.xp}').pack()
+        tk.Label(self.character_frame, text=f'атака: {self.character.attack}').pack()
+        tk.Label(self.character_frame, text=f'защита: {self.character.defence}').pack()
+        tk.Label(self.character_frame, text=f'оружие: {self.character.weapon}').pack()
 
 Game()
