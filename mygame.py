@@ -22,44 +22,46 @@ class Game:
         self.player = Player('Vasia Python', 'Player.png', 1, 100, 0)
         self.enemy = Player('A-19', 'A-19.png', 1, 100, 0)
 
+        self.img_dict = dict()
+
         self.player_frame = tk.Frame(self.window)
         self.player_frame.pack(side='left')
 
-        self.redraw_player_widgets()
-		
+        self.combat_frame = tk.Frame(self.window)
+        self.combat_frame.pack(side='left', expand=True)
+        self.combat_masseges = tk.Listbox(self.combat_frame)
+        self.combat_masseges.pack(ipadx=50)
+        tk.Button(self.combat_frame, text='атака', command=self.attack).pack()
+        
         self.enemy_frame = tk.Frame(self.window)
         self.enemy_frame.pack(side='left')
-        
-        self.combat_frame = tk.Frame(self.window)
-        self.combat_frame.pack(side='left')
-        tk.Button(self.combat_frame, text='атака', command=self.attack).pack()
+
+        self.redraw_hero_widgets(self.player, self.player_frame)
+        self.redraw_hero_widgets(self.enemy, self.enemy_frame)
 
         self.window.mainloop()
 
     def attack(self) -> None:
         self.player.hp -= 10
         self.enemy.hp -= 10
-        self.redraw_player_widgets()
+        self.redraw_hero_widgets(self.player, self.player_frame)
+        self.redraw_hero_widgets(self.enemy, self.enemy_frame)
 
-    def redraw_player_widgets(self) -> None:
+    def redraw_hero_widgets(self, hero, frame) -> None:
         for widget in self.player_frame.winfo_children():
             widget.destroy() 
-        self.creation_widgets(self.player, self.player_frame)
-        self.creation_widgets(self.enemy, self.enemy_frame)
-
-    def creation_widgets(self, character, character_frame) -> None:
-        self.character = character
-        self.character_frame = character_frame
-        image = Image.open(self.img_dir / self.character.image)
+        image = Image.open(self.img_dir / hero.image)
         image = image.resize((self.image_size, self.image_size))
-        self.character_image_tk = ImageTk.PhotoImage(image=image)
-        tk.Label(self.character_frame, image=self.character_image_tk).pack()
-        tk.Label(self.character_frame, text=self.character.name).pack()
-        tk.Label(self.character_frame, text=f'жизни: {self.character.hp}').pack()
-        tk.Label(self.character_frame, text=f'уровень: {self.character.level}').pack()
-        tk.Label(self.character_frame, text=f'опыт: {self.character.xp}').pack()
-        tk.Label(self.character_frame, text=f'атака: {self.character.attack}').pack()
-        tk.Label(self.character_frame, text=f'защита: {self.character.defence}').pack()
-        tk.Label(self.character_frame, text=f'оружие: {self.character.weapon}').pack()
+        self.img_dict[hero.name] = ImageTk.PhotoImage(image=image)
+        tk.Label(frame, image=self.img_dict[hero.name]).pack()
+        tk.Label(frame, text=hero.name).pack()
+        tk.Label(frame, text=f'жизни: {hero.hp}').pack()
+        tk.Label(frame, text=f'уровень: {hero.level}').pack()
+        tk.Label(frame, text=f'опыт: {hero.xp}').pack()
+        tk.Label(frame, text=f'атака: {hero.attack}').pack()
+        tk.Label(frame, text=f'защита: {hero.defence}').pack()
+        tk.Label(frame, text=f'оружие: {hero.weapon}').pack()
 
+
+    
 Game()
