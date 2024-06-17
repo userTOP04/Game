@@ -10,6 +10,8 @@ class Game:
         self.img_dir = Path(__file__).parent / 'img'
         self.window = tk.Tk()
         self.window.attributes('-fullscreen', True)
+        self.window['padx'] = 20
+        self.window['pady'] = 20
         self.window.bind('<Escape>', lambda _: self.window.destroy())
         self.font_size = min(
             self.window.winfo_screenwidth(),
@@ -19,10 +21,10 @@ class Game:
 
         self.image_size = self.window.winfo_screenwidth() // 3
 
-        self.player = Player('Vasia Python', 'Player.png', 1, 100, 0)
-        self.enemy = Player('A-19', 'A-19.png', 1, 100, 0)
-
         self.img_dict = dict()
+
+        self.player = Player('Vasia Python', 'Player.png', 1, 100, 0, Weapon('Клавиатура', 2))
+        self.enemy = Player('A-19', 'A-19.png', 1, 100, 0)
 
         self.player_frame = tk.Frame(self.window)
         self.player_frame.pack(side='left')
@@ -30,9 +32,9 @@ class Game:
         self.combat_frame = tk.Frame(self.window)
         self.combat_frame.pack(side='left', expand=True)
         self.combat_masseges = tk.Listbox(self.combat_frame)
-        self.combat_masseges.pack(ipadx=50)
+        self.combat_masseges.pack(expand=True, fill='both')
         tk.Button(self.combat_frame, text='атака', command=self.attack).pack()
-        
+
         self.enemy_frame = tk.Frame(self.window)
         self.enemy_frame.pack(side='left')
 
@@ -42,13 +44,26 @@ class Game:
         self.window.mainloop()
 
     def attack(self) -> None:
-        self.player.hp -= 10
-        self.enemy.hp -= 10
+        self.combat_turn(self.player, self.enemy)
+        self.combat_turn(self.enemy, self.player)    
         self.redraw_hero_widgets(self.player, self.player_frame)
         self.redraw_hero_widgets(self.enemy, self.enemy_frame)
 
+    def combat_turn(self, attacker, defender) -> None:
+        if attacker.hp <= 0:
+            return
+        if defender.hp <= 0:
+            text = f'{attacker.name} убил {defender.name}'
+            self.combat_masseges.insert(tk.END, text)
+            text = f'{attacker.name} победил в бою'
+            self.combat_masseges.insert(tk.END, text)
+            return
+        defender.hp -= attacker.attack
+        text = f'{attacker.name} ударил {defender.name} на {attacker.attack}'
+        self.combat_masseges.insert(tk.END, text)
+
     def redraw_hero_widgets(self, hero, frame) -> None:
-        for widget in self.player_frame.winfo_children():
+        for widget in frame.winfo_children():
             widget.destroy() 
         image = Image.open(self.img_dir / hero.image)
         image = image.resize((self.image_size, self.image_size))
