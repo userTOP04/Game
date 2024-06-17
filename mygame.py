@@ -30,10 +30,11 @@ class Game:
         self.player_frame.pack(side='left')
 
         self.combat_frame = tk.Frame(self.window)
-        self.combat_frame.pack(side='left', expand=True)
+        self.combat_frame.pack(side='left', expand=True, fill='both')
         self.combat_masseges = tk.Listbox(self.combat_frame)
         self.combat_masseges.pack(expand=True, fill='both')
-        tk.Button(self.combat_frame, text='атака', command=self.attack).pack()
+        self.button = tk.Button(self.combat_frame, text='атака', command=self.attack)
+        self.button.pack()
 
         self.enemy_frame = tk.Frame(self.window)
         self.enemy_frame.pack(side='left')
@@ -57,6 +58,7 @@ class Game:
             self.combat_masseges.insert(tk.END, text)
             text = f'{attacker.name} победил в бою'
             self.combat_masseges.insert(tk.END, text)
+            self.battle_results(attacker)
             return
         defender.hp -= attacker.attack
         text = f'{attacker.name} ударил {defender.name} на {attacker.attack}'
@@ -76,6 +78,16 @@ class Game:
         tk.Label(frame, text=f'атака: {hero.attack}').pack()
         tk.Label(frame, text=f'защита: {hero.defence}').pack()
         tk.Label(frame, text=f'оружие: {hero.weapon}').pack()
+
+    def battle_results(self, winner) -> None:
+        winner.hp += 50
+        winner.xp += 20
+        text = f'{winner.name} получил 50 жизней и 20 опыта'
+        self.combat_masseges.insert(tk.END, text)
+        self.redraw_hero_widgets(self.player, self.player_frame)
+        self.redraw_hero_widgets(self.enemy, self.enemy_frame)
+        self.button.destroy()
+
 
 
     
