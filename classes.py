@@ -7,7 +7,7 @@
 
 class Player:
     # Класс это переменные + функции
-    def __init__(self, name: str, image: str, level: int, hp: int, xp: int) -> None:
+    def __init__(self, name: str, image: str, level: int, hp: int, xp: int, weapon='') -> None:
         '''
         Конструктор класс
         Вызывается сам после создания эгземпляра
@@ -20,17 +20,23 @@ class Player:
         self.level = level
         self.hp = hp
         self.xp = xp
-        self.attack = 1
+        self.weapon = weapon 
+        if not self.weapon:
+            self.weapon = Weapon()
+        self.attack = self.weapon.attack
         self.defence = 1
-        self.weapon = Weapon()
+        
 
 
 class Weapon():
-    def __init__(self, name='', attack=1) -> None:
+    def __init__(self, name='', attack='') -> None:
         self.name = name
         if not self.name:
             self.name = 'Кулак'
         self.attack = attack
+        if not self.attack:
+            self.attack = 1
+            
 
     def __str__(self) -> str:
         return f'{self.name} ({self.attack})'
